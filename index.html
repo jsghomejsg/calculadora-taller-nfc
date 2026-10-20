@@ -119,8 +119,13 @@
         </div>
 
         <div class="form-group">
-            <label for="costeNfc">Coste Unitario Chip NFC (€):</label>
+            <label for="costeNfc">Tu Coste Unitario Chip NFC (€):</label>
             <input type="number" id="costeNfc" value="0.15" step="0.01" min="0" oninput="calcular()">
+        </div>
+
+        <div class="form-group">
+            <label for="precioKgFilamento">Precio Bobina Filamento (€/kg):</label>
+            <input type="number" id="precioKgFilamento" value="16.00" step="0.5" min="0" oninput="calcular()">
         </div>
 
         <div class="form-group">
@@ -148,14 +153,16 @@
             const horasPlaca = parseFloat(document.getElementById('horasPlaca').value) || 0;
             const tarifaHora = parseFloat(document.getElementById('tarifaHora').value) || 0;
             const costeNfc = parseFloat(document.getElementById('costeNfc').value) || 0;
+            const precioKgFilamento = parseFloat(document.getElementById('precioKgFilamento').value) || 0;
             const gramosPlaca = parseFloat(document.getElementById('gramosPlaca').value) || 0;
 
             const placas = Math.ceil(cantidad / porPlaca);
             const horasTotales = placas * horasPlaca;
             const totalPresupuesto = (horasTotales * tarifaHora) + (cantidad * costeNfc);
             
-            // Costes reales internos de producción:
-            const costeFilamento = (placas * gramosPlaca) * 0.016; // 16€/kg
+            // Costes reales internos de producción dinámicos:
+            const costeGramosTotal = (placas * gramosPlaca);
+            const costeFilamento = costeGramosTotal * (precioKgFilamento / 1000);
             const costeLuz = horasTotales * 0.024; // Consumo Bambu A1
             const costeDesgaste = horasTotales * 0.25; // Amortización
             const costeChips = cantidad * costeNfc;
