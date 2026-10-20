@@ -7,7 +7,7 @@
     <style>
         :root {
             --primary: #2563eb;
-            --primary-hover: #1d4ed8;
+            --success: #16a34a;
             --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-color: #1e293b;
@@ -30,30 +30,30 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
         }
         h2 {
             margin-top: 0;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: #0f172a;
             text-align: center;
             margin-bottom: 20px;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         label {
             display: block;
             font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
         }
         input {
             width: 100%;
-            padding: 10px;
+            padding: 8px 10px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             box-sizing: border-box;
         }
         input:focus {
@@ -62,34 +62,44 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         .results {
-            margin-top: 25px;
+            margin-top: 20px;
             background: #f1f5f9;
             padding: 15px;
             border-radius: 8px;
             border-left: 4px solid var(--primary);
         }
         .results p {
-            margin: 8px 0;
-            font-size: 0.95rem;
+            margin: 6px 0;
+            font-size: 0.9rem;
             display: flex;
             justify-content: space-between;
         }
         .results p.total {
             font-weight: bold;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             color: #0f172a;
             border-top: 1px solid #cbd5e1;
-            padding-top: 8px;
+            padding-top: 6px;
+            margin-top: 8px;
+        }
+        .results p.benefit {
+            font-weight: bold;
+            font-size: 1.15rem;
+            color: var(--success);
+            background: #dcfce7;
+            padding: 8px;
+            border-radius: 6px;
             margin-top: 10px;
+            border: 1px solid #86efac;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Calculadora B2B - Llaveros NFC</h2>
+        <h2>Calculadora B2B - Taller 3D & NFC</h2>
         
         <div class="form-group">
-            <label for="cantidad">Cantidad de Llaveros:</label>
+            <label for="cantidad">Cantidad de Llaveros a Entregar:</label>
             <input type="number" id="cantidad" value="500" min="1" oninput="calcular()">
         </div>
 
@@ -99,12 +109,12 @@
         </div>
 
         <div class="form-group">
-            <label for="horasPlaca">Horas por Placa (formato decimal, ej: 4.73 para 4h 44m):</label>
+            <label for="horasPlaca">Horas por Placa (ej: 4.73 para 4h 44m):</label>
             <input type="number" id="horasPlaca" value="4.73" step="0.01" min="0.1" oninput="calcular()">
         </div>
 
         <div class="form-group">
-            <label for="tarifaHora">Tarifa Taller (€/hora máquina):</label>
+            <label for="tarifaHora">Tarifa Venta Taller (€/h máquina):</label>
             <input type="number" id="tarifaHora" value="4.50" step="0.1" min="0" oninput="calcular()">
         </div>
 
@@ -113,14 +123,20 @@
             <input type="number" id="costeNfc" value="0.15" step="0.01" min="0" oninput="calcular()">
         </div>
 
+        <div class="form-group">
+            <label for="gramosPlaca">Gramos de Filamento por Placa (ej: 139g):</label>
+            <input type="number" id="gramosPlaca" value="139" step="1" min="0" oninput="calcular()">
+        </div>
+
         <div class="results">
             <p><span>Placas necesarias:</span> <strong id="resPlacas">20</strong></p>
             <p><span>Horas totales máquina:</span> <strong id="resHoras">94.67 h</strong></p>
-            <p><span>Coste de impresión:</span> <strong id="resImpresion">426.00 €</strong></p>
-            <p><span>Coste chips NFC:</span> <strong id="resNfc">75.00 €</strong></p>
-            <p class="total"><span>Presupuesto Total:</span> <strong id="resTotal">501.00 €</strong></p>
-            <p style="font-size: 0.85rem; color: #64748b; justify-content: center; margin-top: 10px;">
-                Precio unitario: <span id="resUnitario">1.00</span> € / ud
+            <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 8px 0;">
+            <p style="font-size: 0.85rem; color: #475569;"><span>Tus Costes Reales (Filamento + Luz + Desgaste + NFC):</span> <strong id="resCosteReal">145.40 €</strong></p>
+            <p class="total"><span>Precio Cliente (Presupuesto Total):</span> <strong id="resTotal">501.00 €</strong></p>
+            <p class="benefit"><span>Tu Beneficio Neto Real:</span> <strong id="resBeneficio">355.60 €</strong></p>
+            <p style="font-size: 0.8rem; color: #64748b; text-align: center; margin-top: 8px;">
+                Precio unitario cliente: <span id="resUnitario">1.00</span> €/ud
             </p>
         </div>
     </div>
@@ -132,19 +148,27 @@
             const horasPlaca = parseFloat(document.getElementById('horasPlaca').value) || 0;
             const tarifaHora = parseFloat(document.getElementById('tarifaHora').value) || 0;
             const costeNfc = parseFloat(document.getElementById('costeNfc').value) || 0;
+            const gramosPlaca = parseFloat(document.getElementById('gramosPlaca').value) || 0;
 
             const placas = Math.ceil(cantidad / porPlaca);
             const horasTotales = placas * horasPlaca;
-            const costeImpresion = horasTotales * tarifaHora;
-            const costeTotalNfc = cantidad * costeNfc;
-            const total = costeImpresion + costeTotalNfc;
-            const unitario = cantidad > 0 ? (total / cantidad) : 0;
+            const totalPresupuesto = (horasTotales * tarifaHora) + (cantidad * costeNfc);
+            
+            // Costes reales internos de producción:
+            const costeFilamento = (placas * gramosPlaca) * 0.016; // 16€/kg
+            const costeLuz = horasTotales * 0.024; // Consumo Bambu A1
+            const costeDesgaste = horasTotales * 0.25; // Amortización
+            const costeChips = cantidad * costeNfc;
+
+            const costeRealTotal = costeFilamento + costeLuz + costeDesgaste + costeChips;
+            const beneficioNeto = totalPresupuesto - costeRealTotal;
+            const unitario = cantidad > 0 ? (totalPresupuesto / cantidad) : 0;
 
             document.getElementById('resPlacas').innerText = placas;
             document.getElementById('resHoras').innerText = horasTotales.toFixed(2) + ' h';
-            document.getElementById('resImpresion').innerText = costeImpresion.toFixed(2) + ' €';
-            document.getElementById('resNfc').innerText = costeTotalNfc.toFixed(2) + ' €';
-            document.getElementById('resTotal').innerText = total.toFixed(2) + ' €';
+            document.getElementById('resCosteReal').innerText = costeRealTotal.toFixed(2) + ' €';
+            document.getElementById('resTotal').innerText = totalPresupuesto.toFixed(2) + ' €';
+            document.getElementById('resBeneficio').innerText = beneficioNeto.toFixed(2) + ' €';
             document.getElementById('resUnitario').innerText = unitario.toFixed(2);
         }
         calcular();
